@@ -48,6 +48,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
 
@@ -59,6 +60,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 //redirects any request to /u/:shortURL to its longURL
 app.get("/u/:shortURL", (req, res) => {
+
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
 
@@ -70,6 +72,6 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening to port ${PORT}!`);
+  console.log(`TinyApp listening to port ${PORT}!`);
 });
 
