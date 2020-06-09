@@ -12,7 +12,7 @@ const urlDatabase = {
 //sending variables to EJS template (must be object)
 app.get("/urls", (req, res) => {
   let templateVars = {
-    urlDatabase
+    urls: urlDatabase
   };
   //pass data to ejs (file, data): ('urls_index', templateVars)
   res.render("urls_index", templateVars);
@@ -21,7 +21,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[shortURL]
+    longURL: urlDatabase[req.params.shortURL]
   };
   res.render("urls_show", templateVars);
 });
