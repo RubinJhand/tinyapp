@@ -9,15 +9,21 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
+//sending variables to EJS template (must be object)
 app.get("/urls", (req, res) => {
   let templateVars = {
     urlDatabase
   };
+  //pass data to ejs (file, data): ('urls_index', templateVars)
   res.render("urls_index", templateVars);
+});
+
+app.get("/urls/:shortURL", (req, res) => {
+  let templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[shortURL]
+  };
+  res.render("urls_show", templateVars);
 });
 
 app.get("/urls.json", (req, res) => {
