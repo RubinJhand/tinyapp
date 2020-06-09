@@ -35,7 +35,8 @@
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
-            <td><form method="POST" action="/urls/<%= url %>/delete"><button type="button" class="button">Delete</button></form></td>
+            <td><form method="POST" action="/urls/<%= url %>/delete">
+              <button type="submit" class="button">Delete</button></form></td>
           </tr>
         <% } %>
         <a href="#">emptyUrl</a>
