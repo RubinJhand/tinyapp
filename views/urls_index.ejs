@@ -18,10 +18,10 @@
         </tr>
       </thead>
       <tbody><!--change -->
-        <% for(let url in urlDatabase) { %>
+        <% for(let url in urls) { %>
           <tr>
             <td><%= url %></td>
-            <td><%= urlDatabase[url] %></td>
+            <td><%= urls[url] %></td>
           </tr>
         <% } %>
         <a href="#">emptyUrl</a>
