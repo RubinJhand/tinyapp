@@ -3,8 +3,17 @@ const bodyParser = require("body-parser");
 const app = express();
 const PORT = 8080; //default port 8080
 
-app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
+
+app.use(bodyParser.urlencoded({extended: true}));
+
+const generateRandomString = () => {
+  //Google search led to this:
+  //http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
+  //not ideal for real world, but for my purposes, should work
+ Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+};
+
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
