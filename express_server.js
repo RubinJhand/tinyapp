@@ -17,6 +17,10 @@ app.get("/urls", (req, res) => {
   //pass data to ejs (file, data): ('urls_index', templateVars)
   res.render("urls_index", templateVars);
 });
+//new needs to be defined before :shortURL; takes precedence; routes should be ordered from most specific to least specific
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
+});
 
 app.get("/urls/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
