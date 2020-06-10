@@ -1,10 +1,10 @@
-const express = require("express");
-const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
+const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; //default port 8080
 
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -26,19 +26,19 @@ const urlDatabase = {
 };
 
 //sending variables to EJS template (must be object)
-app.get("/urls", (req, res) => {
+app.get('/urls', (req, res) => {
   let templateVars = {
     urls: urlDatabase
   };
   //pass data to ejs (file, data): ('urls_index', templateVars)
-  res.render("urls_index", templateVars);
+  res.render('urls_index', templateVars);
 });
 //new needs to be defined before :shortURL; takes precedence; routes should be ordered from most specific to least specific
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+app.get('/urls/new', (req, res) => {
+  res.render('urls_new');
 });
 
-app.post("/urls", (req, res) => {
+app.post('/urls', (req, res) => {
   // Log the POST request body to the console; output: { longURL: 'www.example.com' }
   console.log(req.body);
   //generate shortURL
@@ -50,7 +50,7 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${genShortURL}`);
 });
 
-app.get("/urls/:shortURL", (req, res) => {
+app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
@@ -59,10 +59,10 @@ app.get("/urls/:shortURL", (req, res) => {
     shortURL,
     longURL
   };
-  res.render("urls_show", templateVars);
+  res.render('urls_show', templateVars);
 });
 //redirects any request to /u/:shortURL to its longURL
-app.get("/u/:shortURL", (req, res) => {
+app.get('/u/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
@@ -96,7 +96,14 @@ app.post('/urls/:shortURL/edit', (req, res) => {
   res.redirect('/urls'); 
 });
 
-app.get("/urls.json", (req, res) => {
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  // remember cookie, NOT cookies
+  res.cookie('username', username);
+  res.redirect('/urls'); 
+});
+
+app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
