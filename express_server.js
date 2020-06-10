@@ -28,14 +28,42 @@ const urlDatabase = {
 //sending variables to EJS template (must be object)
 app.get('/urls', (req, res) => {
   let templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies.username
   };
   //pass data to ejs (file, data): ('urls_index', templateVars)
   res.render('urls_index', templateVars);
 });
-//new needs to be defined before :shortURL; takes precedence; routes should be ordered from most specific to least specific
+
 app.get('/urls/new', (req, res) => {
-  res.render('urls_new');
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.username
+  };
+
+  res.render('urls_new', templateVars);
+});
+
+app.get('/urls/:shortURL', (req, res) => {
+
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+
+  let templateVars = {
+    shortURL,
+    longURL,
+    username: req.cookies.username
+  };
+  res.render('urls_show', templateVars);
+});
+//redirects any request to /u/:shortURL to its longURL
+app.get('/u/:shortURL', (req, res) => {
+
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  
+
+  res.redirect(longURL);
 });
 
 app.post('/urls', (req, res) => {
@@ -48,26 +76,6 @@ app.post('/urls', (req, res) => {
   urlDatabase[genShortURL] = longURL;
   //redirects to new shortURL
   res.redirect(`/urls/${genShortURL}`);
-});
-
-app.get('/urls/:shortURL', (req, res) => {
-
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-
-  let templateVars = {
-    shortURL,
-    longURL
-  };
-  res.render('urls_show', templateVars);
-});
-//redirects any request to /u/:shortURL to its longURL
-app.get('/u/:shortURL', (req, res) => {
-
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-
-  res.redirect(longURL);
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
