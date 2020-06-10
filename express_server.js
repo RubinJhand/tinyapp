@@ -1,11 +1,14 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+const express = require('express');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const app = express();
 const PORT = 8080; //default port 8080
 
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
+
 
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 const generateRandomString = () => {
   //Google search led to this: NOT MY IDEA (I did not come up with this)
@@ -23,19 +26,47 @@ const urlDatabase = {
 };
 
 //sending variables to EJS template (must be object)
-app.get("/urls", (req, res) => {
+app.get('/urls', (req, res) => {
   let templateVars = {
-    urls: urlDatabase
+    urls: urlDatabase,
+    username: req.cookies.username
   };
   //pass data to ejs (file, data): ('urls_index', templateVars)
-  res.render("urls_index", templateVars);
-});
-//new needs to be defined before :shortURL; takes precedence; routes should be ordered from most specific to least specific
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  res.render('urls_index', templateVars);
 });
 
-app.post("/urls", (req, res) => {
+app.get('/urls/new', (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.username
+  };
+
+  res.render('urls_new', templateVars);
+});
+
+app.get('/urls/:shortURL', (req, res) => {
+
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+
+  let templateVars = {
+    shortURL,
+    longURL,
+    username: req.cookies.username
+  };
+  res.render('urls_show', templateVars);
+});
+//redirects any request to /u/:shortURL to its longURL
+app.get('/u/:shortURL', (req, res) => {
+
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  
+
+  res.redirect(longURL);
+});
+
+app.post('/urls', (req, res) => {
   // Log the POST request body to the console; output: { longURL: 'www.example.com' }
   console.log(req.body);
   //generate shortURL
@@ -47,24 +78,16 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${genShortURL}`);
 });
 
-app.get("/urls/:shortURL", (req, res) => {
-
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-
-  let templateVars = {
-    shortURL,
-    longURL
-  };
-  res.render("urls_show", templateVars);
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  // remember cookie, NOT cookies
+  res.cookie('username', username);
+  res.redirect('/urls'); 
 });
-//redirects any request to /u/:shortURL to its longURL
-app.get("/u/:shortURL", (req, res) => {
 
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-
-  res.redirect(longURL);
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('urls');
 });
 
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -93,7 +116,7 @@ app.post('/urls/:shortURL/edit', (req, res) => {
   res.redirect('/urls'); 
 });
 
-app.get("/urls.json", (req, res) => {
+app.get('/urls.json', (req, res) => {
   res.json(urlDatabase);
 });
 
