@@ -78,6 +78,18 @@ app.post('/urls', (req, res) => {
   res.redirect(`/urls/${genShortURL}`);
 });
 
+app.post('/login', (req, res) => {
+  const username = req.body.username;
+  // remember cookie, NOT cookies
+  res.cookie('username', username);
+  res.redirect('/urls'); 
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('username');
+  res.redirect('urls');
+});
+
 app.post('/urls/:shortURL/delete', (req, res) => {
 
   const shortURL = req.params.shortURL;
@@ -101,13 +113,6 @@ app.post('/urls/:shortURL/edit', (req, res) => {
   
   urlDatabase[shortURL] = updatedURL;
 
-  res.redirect('/urls'); 
-});
-
-app.post('/login', (req, res) => {
-  const username = req.body.username;
-  // remember cookie, NOT cookies
-  res.cookie('username', username);
   res.redirect('/urls'); 
 });
 
