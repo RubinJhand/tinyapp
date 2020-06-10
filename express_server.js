@@ -75,6 +75,23 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   //redirects user after delete
   res.redirect('/urls'); 
 });
+//redirect from index page
+app.post('/urls/:shortURL', (req, res) => {
+
+  const shortURL = req.params.shortURL;
+  //redirects user to edit page
+  res.redirect(`/urls/${shortURL}`); 
+});
+
+app.post('/urls/:shortURL/edit', (req, res) => {
+
+  const updatedURL = req.body.updatedURL;
+  const shortURL = req.params.shortURL;
+  
+  urlDatabase[shortURL] = updatedURL;
+
+  res.redirect('/urls'); 
+});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);

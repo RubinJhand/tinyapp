@@ -17,11 +17,11 @@
       </div>
     <div class="card-footer text-muted"></div>
     <h2>Edit</h2>
-    <form class="form-inline align-self-center" method="POST" action="/urls/>
+    <form class="form-inline align-self-center" method="POST" action="/urls/<%= shortURL %>/edit">
       <div class="form-group mb-2">
-        <label for="longURL">Enter a URL:</label>
+        <label for="updatedURL">Enter a URL:</label>
         <input class="form-control" type="text" 
-        name="longURL" placeholder="MUST Include - http://" style="width: 250px; margin: 1em">
+        name="updatedURL" placeholder="MUST Include - http://" style="width: 250px; margin: 1em">
         <button type="submit" class="btn btn-primary">Submit</button>
       </div>
     </form>
