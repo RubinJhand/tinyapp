@@ -21,8 +21,14 @@ const generateRandomString = () => {
 
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "userRandomID"
+  },
+  "9sm5xK": {
+    longURL: "http://www.google.com", 
+    userID: "user2RandomID"
+  }
 };
 
 const users = {
@@ -89,7 +95,7 @@ app.get('/login', (req, res) => {
 app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   const userID = req.cookies['user_id'];
 
   let templateVars = {
@@ -103,9 +109,8 @@ app.get('/urls/:shortURL', (req, res) => {
 app.get('/u/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
+  const longURL = urlDatabase[shortURL].longURL;
   
-
   res.redirect(longURL);
 });
 //creates tinyURL and redirects; adds to urlDatabase
@@ -115,8 +120,12 @@ app.post('/urls', (req, res) => {
   //generate shortURL
   const genShortURL = generateRandomString();
   const longURL = req.body.longURL;
+  const userID = req.cookies['user_id'];
  
-  urlDatabase[genShortURL] = longURL;
+  urlDatabase[genShortURL] = {
+    longURL,
+    userID
+  };
  
   res.redirect(`/urls/${genShortURL}`);
 });
