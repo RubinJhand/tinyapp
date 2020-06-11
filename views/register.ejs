@@ -14,22 +14,22 @@
   <%- include('./partials/_header') %>
 
   <h1 style="width: 500px; margin:0 auto; padding: 40px">Register </h1>
+  <br/>
   <form method="POST" action="/register">
-    <div id="emailform" class="form-group" style="width: 500px; margin: auto; padding: 20px">
-      <label for="email">
-        <h4>Email address</h4>
-      </label>
-      <input type="email" class="form-control col-5" name="email" aria-describedby="emailHelp" placeholder="abc@domain.com">
+    <div id="emailform" class="form-group mb-2" style="width: 500px; margin: auto;">
+      <label for="email"><h1 style="text-align: justify;font-size:1.30rem; font-family: fantasy;">Enter Email Address:</h1></label>
+      <input id="email" class="form-control col-5" type="email" name="email"  placeholder="abc@domain.com">
     </div>
+  <br/>
 
-    <div id="passwordform" class="form-group" style="width: 500px; margin:0 auto; padding: 20px">
-      <label for="password">
-        <h4>Password</h4>
+    <div id="passwordform" class="form-group" style="width: 500px; margin:0 auto;">
+      <label for="password"><h1 style="text-align: justify;font-size: 1.30rem; font-family: fantasy;"> New Password:</h1>
       </label>
-      <input type="password" class="form-control col-5" name="password" aria-describedby="passwordHelp" placeholder="Password">
+      <input class="form-control col-5" type="password" name="password" placeholder="Password">
     </div>
+  <br/>
     <div style="width: 400px; margin:0 auto;">
-      <button type="submit" class="btn btn-outline-success">Register
+      <button type="submit" class="btn btn-success">Register
       </button>
     </div>
     </form>
