@@ -43,14 +43,31 @@ const users = {
     password: "1234"
   }
 };
+//Search for entered user email
+const searchUserEmail = (usersObject, enteredUserEmail) => {
 
-const searchUserEmail = (obj, email) => {
-  for (let u in obj) {
-    if (obj[u].email === email) {
-      return obj[u];
+  for (let user in usersObject) {
+    if (usersObject[user].email === enteredUserEmail) {
+      return usersObject[user];
     }
   }
   return false;
+
+};
+
+const urlsForUser = (id) => {
+
+  const xURLs = {};
+  
+  for (let tinyURL in urlDatabase) {
+    
+    const shortURLID = urlDatabase[tinyURL];
+
+    if (shortURLID.userID === id) {
+      return xURLs[tinyURL] = shortURLID.longURL;
+    }
+  }
+  return xURLs;
 };
 
 //renders my urls page (urls index)
@@ -151,7 +168,7 @@ app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
   res.redirect('/urls');
 });
-//registers user
+//registers user, creates cookie with unique user id
 app.post('/register', (req, res) => {
   const email = req.body.email;
 
