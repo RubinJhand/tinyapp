@@ -38,34 +38,30 @@ const users = {
   }
 };
 
-//sending variables to EJS template (must be object)
+//renders my urls page (urls index)
 app.get('/urls', (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
-    username: req.cookies.username
+    urls: urlDatabase, username: req.cookies.username
   };
-  //pass data to ejs (file, data): ('urls_index', templateVars)
   res.render('urls_index', templateVars);
 });
-
+//renders create new url page
 app.get('/urls/new', (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
-    username: req.cookies.username
+    urls: urlDatabase, username: req.cookies.username
   };
 
   res.render('urls_new', templateVars);
 });
-
+//regristration page
 app.get('/register', (req, res) => {
   let templateVars = {
-    urls: urlDatabase,
-    username: req.cookies.username
+    urls: urlDatabase, username: req.cookies.username
   };
 
   res.render('register', templateVars);
 });
-
+//renders edit page
 app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
@@ -87,16 +83,16 @@ app.get('/u/:shortURL', (req, res) => {
 
   res.redirect(longURL);
 });
-
+//creates tinyURL and redirects; adds to urlDatabase
 app.post('/urls', (req, res) => {
-  // Log the POST request body to the console; output: { longURL: 'www.example.com' }
+  
   console.log(req.body);
   //generate shortURL
   const genShortURL = generateRandomString();
   const longURL = req.body.longURL;
-  //Adds to urlDatabase
+ 
   urlDatabase[genShortURL] = longURL;
-  //redirects to new shortURL
+ 
   res.redirect(`/urls/${genShortURL}`);
 });
 
@@ -106,12 +102,12 @@ app.post('/login', (req, res) => {
   res.cookie('username', username);
   res.redirect('/urls'); 
 });
-
+//clears cookies, logs out, redirect to /urls
 app.post('/logout', (req, res) => {
   res.clearCookie('username');
   res.redirect('urls');
 });
-
+//deletes entry to urlDatabase, redirects to /urls
 app.post('/urls/:shortURL/delete', (req, res) => {
 
   const shortURL = req.params.shortURL;
@@ -120,14 +116,14 @@ app.post('/urls/:shortURL/delete', (req, res) => {
   //redirects user after delete
   res.redirect('/urls'); 
 });
-//redirect from index page
+//redirect to edit page
 app.post('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
-  //redirects user to edit page
+  
   res.redirect(`/urls/${shortURL}`); 
 });
-
+//updates user entered url in edit page, redirects to /urls
 app.post('/urls/:shortURL/edit', (req, res) => {
 
   const updatedURL = req.body.updatedURL;
@@ -136,6 +132,21 @@ app.post('/urls/:shortURL/edit', (req, res) => {
   urlDatabase[shortURL] = updatedURL;
 
   res.redirect('/urls'); 
+});
+
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const id = generateRandomString();
+
+  users[id] = {
+    id,
+    email,
+    password
+  }
+console.log(users);
+  res.cookie('user_id', id);
+  res.redirect('urls');
 });
 
 app.get('/urls.json', (req, res) => {
