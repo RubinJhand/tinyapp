@@ -40,8 +40,9 @@ const users = {
 
 const searchUserEmail = (obj, email) => {
   for (let u in obj) {
+    console.log(obj[u]);
     if (obj[u].email === email) {
-      return true;
+      return obj[u];
     }
   }
   return false;
@@ -49,7 +50,7 @@ const searchUserEmail = (obj, email) => {
 
 //renders my urls page (urls index)
 app.get('/urls', (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.cookies['userId'];
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
@@ -66,12 +67,21 @@ app.get('/urls/new', (req, res) => {
 });
 //regristration page
 app.get('/register', (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.cookies['userId'];
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
 
   res.render('register', templateVars);
+});
+//renders login page
+app.get('/login', (req, res) => {
+
+  const userID = req.cookies['userId'];
+
+  let templateVars = { urls: urlDatabase, user: users[userID] };
+
+  res.render('login', templateVars);
 });
 //renders edit page
 app.get('/urls/:shortURL', (req, res) => {
@@ -110,9 +120,12 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
 
-  res.cookie('usename', username);
+  let user = searchUserEmail(users, email);
+  console.log(user);
+  res.cookie('userId', user.id);
   res.redirect('/urls'); 
 });
 //clears cookies, logs out, redirect to /urls
