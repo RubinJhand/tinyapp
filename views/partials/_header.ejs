@@ -10,9 +10,9 @@
       
       <div class="navbar-nav">
         <a class="nav-item">
-          <% if (username) { %> 
+          <% if (user) { %> 
             <form     class="form-inline" method="POST" action="/logout">
-              <h8>Logged In As: <%= username %></h8>&nbsp;&nbsp;
+              <h8>Logged In As: <%= user.email %></h8>&nbsp;&nbsp;
               <button type="submit" class="btn btn-outline-dark">Logout</button>
             </form>
           <% } else { %>

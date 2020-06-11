@@ -40,23 +40,26 @@ const users = {
 
 //renders my urls page (urls index)
 app.get('/urls', (req, res) => {
+  const userID = req.cookies['user_id'];
   let templateVars = {
-    urls: urlDatabase, username: req.cookies.username
+    urls: urlDatabase, user: users[userID]
   };
   res.render('urls_index', templateVars);
 });
 //renders create new url page
 app.get('/urls/new', (req, res) => {
+  const userID = req.cookies['user_id'];
   let templateVars = {
-    urls: urlDatabase, username: req.cookies.username
+    urls: urlDatabase, user: users[userID]
   };
 
   res.render('urls_new', templateVars);
 });
 //regristration page
 app.get('/register', (req, res) => {
+  const userID = req.cookies['user_id'];
   let templateVars = {
-    urls: urlDatabase, username: req.cookies.username
+    urls: urlDatabase, user: users[userID]
   };
 
   res.render('register', templateVars);
@@ -66,11 +69,12 @@ app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
+    const userID = req.cookies['user_id'];
 
   let templateVars = {
     shortURL,
     longURL,
-    username: req.cookies.username
+    user: users[userID]
   };
   res.render('urls_show', templateVars);
 });
@@ -98,14 +102,29 @@ app.post('/urls', (req, res) => {
 
 app.post('/login', (req, res) => {
   const username = req.body.username;
-  // remember cookie, NOT cookies
+
   res.cookie('username', username);
   res.redirect('/urls'); 
 });
 //clears cookies, logs out, redirect to /urls
 app.post('/logout', (req, res) => {
-  res.clearCookie('username');
-  res.redirect('urls');
+  res.clearCookie('user_id');
+  res.redirect('/urls');
+});
+//registers user
+app.post('/register', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  const id = generateRandomString();
+
+  users[id] = {
+    id,
+    email,
+    password
+  }
+
+  res.cookie('user_id', id);
+  res.redirect('/urls');
 });
 //deletes entry to urlDatabase, redirects to /urls
 app.post('/urls/:shortURL/delete', (req, res) => {
@@ -132,21 +151,6 @@ app.post('/urls/:shortURL/edit', (req, res) => {
   urlDatabase[shortURL] = updatedURL;
 
   res.redirect('/urls'); 
-});
-
-app.post('/register', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-  const id = generateRandomString();
-
-  users[id] = {
-    id,
-    email,
-    password
-  }
-console.log(users);
-  res.cookie('user_id', id);
-  res.redirect('urls');
 });
 
 app.get('/urls.json', (req, res) => {
