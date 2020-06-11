@@ -68,7 +68,7 @@ const urlsForUser = (id) => {
 
     if (shortURLID.userID === id) {
 
-      return xURLs[tinyURL] = shortURLID.longURL;
+       xURLs[tinyURL] = shortURLID.longURL;
     }
   }
   return xURLs;
@@ -84,7 +84,8 @@ app.get('/urls', (req, res) => {
     urls: urlsForUser(userID), 
     user: users[userID]
   };
-
+  console.log(templateVars);
+  console.log(urlDatabase);
   res.render('urls_index', templateVars);
 });
 //renders create new url page
