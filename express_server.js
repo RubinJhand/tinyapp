@@ -61,8 +61,11 @@ app.get('/urls/new', (req, res) => {
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
-
-  res.render('urls_new', templateVars);
+  if (!userID) {
+    return res.redirect('/login');
+  } else {
+    return res.render('urls_new', templateVars);
+  }
 });
 //regristration page
 app.get('/register', (req, res) => {
