@@ -40,7 +40,6 @@ const users = {
 
 const searchUserEmail = (obj, email) => {
   for (let u in obj) {
-    console.log(obj[u]);
     if (obj[u].email === email) {
       return obj[u];
     }
@@ -50,7 +49,7 @@ const searchUserEmail = (obj, email) => {
 
 //renders my urls page (urls index)
 app.get('/urls', (req, res) => {
-  const userID = req.cookies['userId'];
+  const userID = req.cookies['user_id'];
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
@@ -58,7 +57,7 @@ app.get('/urls', (req, res) => {
 });
 //renders create new url page
 app.get('/urls/new', (req, res) => {
-  const userID = req.cookies['userId'];
+  const userID = req.cookies['user_id'];
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
@@ -67,7 +66,7 @@ app.get('/urls/new', (req, res) => {
 });
 //regristration page
 app.get('/register', (req, res) => {
-  const userID = req.cookies['userId'];
+  const userID = req.cookies['user_id'];
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
@@ -77,7 +76,7 @@ app.get('/register', (req, res) => {
 //renders login page
 app.get('/login', (req, res) => {
 
-  const userID = req.cookies['userId'];
+  const userID = req.cookies['user_id'];
 
   let templateVars = { urls: urlDatabase, user: users[userID] };
 
@@ -88,7 +87,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-  const userID = req.cookies['userId'];
+  const userID = req.cookies['user_id'];
 
   let templateVars = {
     shortURL,
@@ -120,17 +119,24 @@ app.post('/urls', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
+
   const email = req.body.email;
   const password = req.body.password;
 
   let user = searchUserEmail(users, email);
-  console.log(user);
-  res.cookie('userId', user.id);
-  res.redirect('/urls'); 
+  
+  if (!user) {
+    return res.status(403).send('email not found');
+  } else if (user.password !== password) {
+    return res.status(403).send('password does not match');
+  } else {
+    res.cookie('user_id', user.id);
+    res.redirect('/urls'); 
+  }
 });
 //clears cookies, logs out, redirect to /urls
 app.post('/logout', (req, res) => {
-  res.clearCookie('userId');
+  res.clearCookie('user_id');
   res.redirect('/urls');
 });
 //registers user
@@ -151,7 +157,7 @@ app.post('/register', (req, res) => {
       password
     }
   
-    res.cookie('userId', id);
+    res.cookie('user_id', id);
     res.redirect('/urls');
   }
 });
