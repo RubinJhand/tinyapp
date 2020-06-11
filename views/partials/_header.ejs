@@ -1,26 +1,29 @@
 <header>
-  <nav class="navbar navbar-expand navbar-dark bg-success">
-    <a class="navbar-brand" href="/urls">TinyApp</a>
+  <nav class="navbar navbar-expand navbar-dark bg-success justify-content-between">
     
     
       <div class="navbar-nav">
+        <a class="navbar-brand" href="/urls">TinyApp</a>
         <a class="nav-item nav-link" href="/urls">My URLs</a>
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
-
       
-      <% if (username) { %> 
-        <form class="form-inline align-self-end" method="POST" action="/logout">
-          <h7>Logged In As: <%= username %></h7>
-          <button type="submit" class="btn btn-outline-dark">Logout</button>
-        </form>
-      <% } else { %>
-        <form class="form-inline align-self-end" method="POST" action="/login">
-          <label for="username"></label>
-          <input class="form-control" type="text" name="username" placeholder="Username" style="width: 250px; margin: 1em">
-          <button type="submit" class="btn btn-outline-dark">Login</button>
-        </form>
-      <% } %>
-    
+      <div class="navbar-nav">
+        <a class="nav-item">
+          <% if (username) { %> 
+            <form     class="form-inline" method="POST" action="/logout">
+              <h8>Logged In As: <%= username %></h8>&nbsp;&nbsp;
+              <button type="submit" class="btn btn-outline-dark">Logout</button>
+            </form>
+          <% } else { %>
+            <form class="form-inline" method="POST" action="/login">
+            <label for="username"></label>
+            <input class="form-control" type="text" name="username" placeholder="Username" style="width: 250px; margin: 1em">
+            <button type="submit" class="btn btn-outline-dark">Login</button>
+            </form>
+          <% } %>
+        </a>
+      </div>
+      
   </nav>
 </header>
