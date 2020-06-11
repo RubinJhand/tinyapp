@@ -38,6 +38,15 @@ const users = {
   }
 };
 
+const searchUserEmail = (obj, email) => {
+  for (let u in obj) {
+    if (obj[u].email === email) {
+      return true;
+    }
+  }
+  return false;
+};
+
 //renders my urls page (urls index)
 app.get('/urls', (req, res) => {
   const userID = req.cookies['user_id'];
@@ -48,7 +57,7 @@ app.get('/urls', (req, res) => {
 });
 //renders create new url page
 app.get('/urls/new', (req, res) => {
-  const userID = req.cookies['user_id'];
+  const userID = req.cookies['userId'];
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
@@ -69,7 +78,7 @@ app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
-    const userID = req.cookies['user_id'];
+  const userID = req.cookies['userId'];
 
   let templateVars = {
     shortURL,
@@ -103,28 +112,35 @@ app.post('/urls', (req, res) => {
 app.post('/login', (req, res) => {
   const username = req.body.username;
 
-  res.cookie('username', username);
+  res.cookie('usename', username);
   res.redirect('/urls'); 
 });
 //clears cookies, logs out, redirect to /urls
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  res.clearCookie('userId');
   res.redirect('/urls');
 });
 //registers user
 app.post('/register', (req, res) => {
   const email = req.body.email;
-  const password = req.body.password;
-  const id = generateRandomString();
 
-  users[id] = {
-    id,
-    email,
-    password
+  if (email === '') {
+    return res.status(400).send('enter email');
+  } else if (searchUserEmail(users, email)) {
+    return res.status(400).send('email address exists, try a different one');
+  } else {
+    const password = req.body.password;
+    const id = generateRandomString();
+
+    users[id] = {
+      id,
+      email,
+      password
+    }
+  
+    res.cookie('userId', id);
+    res.redirect('/urls');
   }
-
-  res.cookie('user_id', id);
-  res.redirect('/urls');
 });
 //deletes entry to urlDatabase, redirects to /urls
 app.post('/urls/:shortURL/delete', (req, res) => {
