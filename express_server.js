@@ -44,6 +44,15 @@ app.get('/urls/new', (req, res) => {
   res.render('urls_new', templateVars);
 });
 
+app.get('/register', (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    username: req.cookies.username
+  };
+
+  res.render('register', templateVars);
+});
+
 app.get('/urls/:shortURL', (req, res) => {
 
   const shortURL = req.params.shortURL;
