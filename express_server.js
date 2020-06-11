@@ -1,14 +1,16 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
+
 const app = express();
 const PORT = 8080; //default port 8080
 
 app.set('view engine', 'ejs');
 
-
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(cookieParser());
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 
 const generateRandomString = () => {
   //Google search led to this: NOT MY IDEA (I did not come up with this)
@@ -18,7 +20,6 @@ const generateRandomString = () => {
   //apparently not ideal for real world, but for my purposes, should work; change (2, 15) to (2, 5);
  return Math.random().toString(36).substring(2, 5) + Math.random().toString(36).substring(2, 5).toUpperCase();
 };
-
 
 const urlDatabase = {
   "b2xVn2": {
@@ -47,14 +48,16 @@ const users = {
 const searchUserEmail = (usersObject, enteredUserEmail) => {
 
   for (let user in usersObject) {
+    
     if (usersObject[user].email === enteredUserEmail) {
+
       return usersObject[user];
     }
   }
   return false;
 
 };
-
+//Search and return URLs object matching id
 const urlsForUser = (id) => {
 
   const xURLs = {};
@@ -64,6 +67,7 @@ const urlsForUser = (id) => {
     const shortURLID = urlDatabase[tinyURL];
 
     if (shortURLID.userID === id) {
+
       return xURLs[tinyURL] = shortURLID.longURL;
     }
   }
@@ -72,10 +76,15 @@ const urlsForUser = (id) => {
 
 //renders my urls page (urls index)
 app.get('/urls', (req, res) => {
+
   const userID = req.cookies['user_id'];
+
   let templateVars = {
-    urls: urlDatabase, user: users[userID]
+
+    urls: urlsForUser(userID), 
+    user: users[userID]
   };
+
   res.render('urls_index', templateVars);
 });
 //renders create new url page
@@ -84,6 +93,7 @@ app.get('/urls/new', (req, res) => {
   let templateVars = {
     urls: urlDatabase, user: users[userID]
   };
+
   if (!userID) {
     return res.redirect('/login');
   } else {
@@ -134,7 +144,7 @@ app.get('/u/:shortURL', (req, res) => {
 app.post('/urls', (req, res) => {
   
   console.log(req.body);
-  //generate shortURL
+  
   const genShortURL = generateRandomString();
   const longURL = req.body.longURL;
   const userID = req.cookies['user_id'];
@@ -155,10 +165,15 @@ app.post('/login', (req, res) => {
   let user = searchUserEmail(users, email);
   
   if (!user) {
+
     return res.status(403).send('email not found');
+
   } else if (user.password !== password) {
+
     return res.status(403).send('password does not match');
+
   } else {
+
     res.cookie('user_id', user.id);
     res.redirect('/urls'); 
   }
@@ -170,13 +185,19 @@ app.post('/logout', (req, res) => {
 });
 //registers user, creates cookie with unique user id
 app.post('/register', (req, res) => {
+
   const email = req.body.email;
 
   if (email === '') {
+
     return res.status(400).send('enter email');
+
   } else if (searchUserEmail(users, email)) {
+
     return res.status(400).send('email address exists, try a different one');
+
   } else {
+
     const password = req.body.password;
     const id = generateRandomString();
 
