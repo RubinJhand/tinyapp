@@ -1,10 +1,17 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
 const morgan = require('morgan');
 
 const app = express();
-const PORT = 8080; //default port 8080
+const PORT = 8080;
+
+// STORE PASSWORD:
+// const hashedPassword = bcrypt.hashSync(password, salt);
+
+// CHECK PASSWORDS:
+// bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword);
 
 app.set('view engine', 'ejs');
 
@@ -73,7 +80,6 @@ const urlsForUser = (id) => {
   }
   return xURLs;
 };
-
 //renders my urls page (urls index)
 app.get('/urls', (req, res) => {
 
@@ -161,14 +167,14 @@ app.post('/login', (req, res) => {
 
   const email = req.body.email;
   const password = req.body.password;
-
+console.log(password);
   let user = searchUserEmail(users, email);
   
   if (!user) {
 
     return res.status(403).send('email not found');
 
-  } else if (user.password !== password) {
+  } else if (!bcrypt.compareSync(password, user.password)) {
 
     return res.status(403).send('password does not match');
 
@@ -198,7 +204,7 @@ app.post('/register', (req, res) => {
 
   } else {
 
-    const password = req.body.password;
+    const password = bcrypt.hashSync(req.body.password, 10);
     const id = generateRandomString();
 
     users[id] = {
