@@ -1,9 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const morgan = require('morgan');
 const cookieSession = require('cookie-session');
+const { getUserByEmail } = require('./helpers')
 
 const app = express();
 const PORT = 8080;
@@ -55,19 +56,6 @@ const users = {
     email: "user2@example.com",
     password: "1234"
   }
-};
-//Search for entered user email
-const searchUserEmail = (usersObject, enteredUserEmail) => {
-
-  for (let user in usersObject) {
-    
-    if (usersObject[user].email === enteredUserEmail) {
-
-      return usersObject[user];
-    }
-  }
-  return false;
-
 };
 //Search and return URLs object matching id
 const urlsForUser = (id) => {
@@ -173,7 +161,7 @@ app.post('/login', (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  let user = searchUserEmail(users, email);
+  let user = getUserByEmail(users, email);
   
   if (!user) {
 
@@ -203,7 +191,7 @@ app.post('/register', (req, res) => {
 
     return res.status(400).send('enter email');
 
-  } else if (searchUserEmail(users, email)) {
+  } else if (getUserByEmail(users, email)) {
 
     return res.status(400).send('email address exists, try a different one');
 
