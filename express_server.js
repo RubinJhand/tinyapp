@@ -84,8 +84,7 @@ app.get('/urls', (req, res) => {
     urls: urlsForUser(userID), 
     user: users[userID]
   };
-  console.log(templateVars);
-  console.log(urlDatabase);
+
   res.render('urls_index', templateVars);
 });
 //renders create new url page
@@ -212,13 +211,23 @@ app.post('/register', (req, res) => {
     res.redirect('/urls');
   }
 });
-//deletes entry to urlDatabase, redirects to /urls
+//deletes entry to urlDatabase, redirects to /urls or /login
 app.post('/urls/:shortURL/delete', (req, res) => {
 
   const shortURL = req.params.shortURL;
+  const userID = req.cookies['user_id'];
+  const user = urlDatabase[shortURL].userID;
 
+  if (userID === user) {
+
+    delete urlDatabase[req.params.shortURL];
+
+    res.redirect('/urls');
+  } else {
+
+    res.redirect('/login');
+  }
   delete urlDatabase[shortURL];
-  //redirects user after delete
   res.redirect('/urls'); 
 });
 //redirect to edit page
@@ -234,7 +243,7 @@ app.post('/urls/:shortURL/edit', (req, res) => {
   const updatedURL = req.body.updatedURL;
   const shortURL = req.params.shortURL;
   
-  urlDatabase[shortURL] = updatedURL;
+  urlDatabase[shortURL].longURL = updatedURL;
 
   res.redirect('/urls'); 
 });
