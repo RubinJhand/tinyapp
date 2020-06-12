@@ -1,28 +1,23 @@
 <header>
   <nav class="navbar navbar-expand navbar-dark bg-success justify-content-between">
     
-    
-      <div class="navbar-nav">
-        <a class="navbar-brand" href="/urls">TinyApp</a>
-        <a class="nav-item nav-link" href="/urls">My URLs</a>
-        <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
-      </div>
-      
-      <div class="navbar-nav">
-        <a class="nav-item">
-          <% if (user) { %> 
-            <form     class="form-inline" method="POST" action="/logout">
-              <h8>Logged In As: <%= user.email %></h8>&nbsp;&nbsp;
-              <button type="submit" class="btn btn-outline-dark">Logout
-              </button>
-            </form>
-          <% } else { %>
-            <a class="nav-item nav-link" href="/login">Login</a>
-            <a class="nav-item nav-link" href="/register">Register
-            </a>
-          <% } %>
-        </a>
-      </div>
-      
+    <div class="navbar-nav">
+      <a class="navbar-brand" href="/urls">TinyApp</a>
+      <a class="nav-item nav-link" href="/urls">My URLs</a>
+      <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
+    </div>
+    <div class="navbar-nav">
+      <a class="nav-item">
+      <% if (user) { %> 
+        <form class="form-inline" method="POST" action="/logout">
+          <h8>Logged In As: <%= user.email %></h8>&nbsp;&nbsp;
+            <button type="submit" class="btn btn-outline-dark">Logout</button>
+        </form>
+      <% } else { %>
+        <a class="nav-item nav-link" href="/login">Login</a>
+        <a class="nav-item nav-link" href="/register">Register</a>
+      <% } %>
+      </a>
+    </div>
   </nav>
 </header>

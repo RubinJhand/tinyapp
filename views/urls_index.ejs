@@ -15,55 +15,47 @@
   <% if (!user) { %>
     <!-- code from w3schools.com-->
     <div class="justify-content-between" style="padding-top: 100px;">
-      <h2 class="display-3 alert-heading text-center" style="padding: 30px;">PLAY TinyApp
-      </h2>
+      <h2 class="display-3 alert-heading text-center" style="padding: 30px;">PLAY TinyApp</h2>
       <div style="width: 400px; margin:0 auto;">
         <form method="GET" action="/login">
-          <button type="submit" class="btn btn-success" style="width: 400px; margin:0 auto;">LOGIN
-          </button>
+          <button type="submit" class="btn btn-success" style="width: 400px; margin:0 auto;">LOGIN</button>
         </form>
-        <h4 class="text-center" style="padding: 30px;">OR
-        </h4>
+        <h4 class="text-center" style="padding: 30px;">OR</h4>
         <form method="GET" action="/register">
-          <button type="submit" class="btn btn-success" style="width: 400px; margin:0 auto;">REGISTER
-          </button>
+          <button type="submit" class="btn btn-success" style="width: 400px; margin:0 auto;">REGISTER</button>
         </form>
       </div>
     </div>
   <% } else { %>
-  <main style="margin: 1em;">
-    <h3>My URLs</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Short URL</th>
-          <th scope="col">Long URL</th>
-          <th scope="col">Edit</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody><!--change -->
+    <main style="margin: 1em;">
+      <h3>My URLs</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Short URL</th>
+            <th scope="col">Long URL</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
         <% for(let url in urls) { %>
           <tr>
             <td><%= url %></td>
             <td><%= urls[url] %></td>
             <td>
               <form method="POST" action="/urls/<%= url %>">
-                <button type="submit" class="btn btn-outline-primary">Edit
-
-                </button>
+                <button type="submit" class="btn btn-outline-primary">Edit</button>
               </form>
             </td>
             <td>
               <form method="POST" action="/urls/<%= url %>/delete">
-                <button type="submit" class="btn btn-outline-danger">Delete
-                </button>
+                <button type="submit" class="btn btn-outline-danger">Delete</button>
               </form>
             </td>
           </tr>
         <% } %>
     <% } %>
-        <a></a>
       </tbody>
     </table>
   </main>
