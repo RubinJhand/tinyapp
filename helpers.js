@@ -9,7 +9,6 @@ const getUserByEmail = (usersObject, enteredUserEmail) => {
     }
   }
   return false;
-
 };
 
 module.exports = { getUserByEmail };
