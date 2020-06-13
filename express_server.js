@@ -1,129 +1,48 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-// const cookieParser = require('cookie-parser');
-const bcrypt = require('bcrypt');
-const morgan = require('morgan');
-const cookieSession = require('cookie-session');
-const { getUserByEmail } = require('./helpers')
-
-const app = express();
-const PORT = 8080;
-
-// STORE PASSWORD:
-// const hashedPassword = bcrypt.hashSync(password, salt);
-
-// CHECK PASSWORDS:
-// bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword);
+const { bodyParser, bcrypt, morgan, cookieSession, app, PORT, urlDatabase, users } = require('./dependencies');
+const { getUserByEmail, generateRandomString, urlsForUser, renderTemplateVariables, eradicateCookies, creatCookie, reqContainer } = require('./helpers')
 
 app.set('view engine', 'ejs');
 
 app.use(bodyParser.urlencoded({extended: true}));
-// app.use(cookieParser());
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms'));
 app.use(cookieSession( {
   name:'session',
   keys: ['key1', 'key2']
 }));
 
-const generateRandomString = () => {
-  //Google search led to this: NOT MY IDEA (I did not come up with this)
-  //Source:
-    //http://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid-in-javascript
-
-  //apparently not ideal for real world, but for my purposes, should work; change (2, 15) to (2, 5);
- return Math.random().toString(36).substring(2, 5) + Math.random().toString(36).substring(2, 5).toUpperCase();
-};
-
-const urlDatabase = {
-  "b2xVn2": {
-    longURL: "http://www.lighthouselabs.ca",
-    userID: "userRandomID"
-  },
-  "9sm5xK": {
-    longURL: "http://www.google.com", 
-    userID: "user2RandomID"
+app.get('/', (req, res) => {
+  const { userID } = reqContainer(req);
+  if (userID) {
+   res.redirect('/urls'); 
+  } else {
+    res.redirect('login');
   }
-};
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "1234"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "1234"
-  }
-};
-//Search and return URLs object matching id
-const urlsForUser = (id) => {
-
-  const xURLs = {};
-  
-  for (let tinyURL in urlDatabase) {
-    
-    const shortURLID = urlDatabase[tinyURL];
-
-    if (shortURLID.userID === id) {
-
-       xURLs[tinyURL] = shortURLID.longURL;
-    }
-  }
-  return xURLs;
-};
-//renders my urls page (urls index)
-app.get('/urls', (req, res) => {
-
-  const userID = req.session.user_id;
-
-  let templateVars = {
-
-    urls: urlsForUser(userID), 
-    user: users[userID]
-  };
-
-  res.render('urls_index', templateVars);
 });
-//renders create new url page
-app.get('/urls/new', (req, res) => {
-  const userID = req.session.user_id;
-  let templateVars = {
-    urls: urlDatabase, user: users[userID]
-  };
 
+app.get('/urls', (req, res) => {
+  renderTemplateVariables(req, res, urlsForUser(req.session.user_id, urlDatabase), users, 'urls_index');
+});
+
+app.get('/urls/new', (req, res) => {
+  const { userID } = reqContainer(req);
   if (!userID) {
     return res.redirect('/login');
   } else {
-    return res.render('urls_new', templateVars);
-  }
-});
-//regristration page
-app.get('/register', (req, res) => {
-  const userID = req.session.user_id;
-  let templateVars = {
-    urls: urlDatabase, user: users[userID]
+    renderTemplateVariables(req, res, urlDatabase, users, 'urls_new');
   };
-
-  res.render('register', templateVars);
 });
-//renders login page
+
+app.get('/register', (req, res) => {
+  renderTemplateVariables(req, res, urlDatabase, users, 'register');
+});
+
 app.get('/login', (req, res) => {
-
-  const userID = req.session.user_id;
-
-  let templateVars = { urls: urlDatabase, user: users[userID] };
-
-  res.render('login', templateVars);
+  renderTemplateVariables(req, res, urlDatabase, users, 'login');
 });
-//renders edit page
+
 app.get('/urls/:shortURL', (req, res) => {
-
-  const shortURL = req.params.shortURL;
+  const { shortURL, userID } = reqContainer(req);
   const longURL = urlDatabase[shortURL].longURL;
-  const userID = req.session.user_id;
-
   let templateVars = {
     shortURL,
     longURL,
@@ -131,119 +50,70 @@ app.get('/urls/:shortURL', (req, res) => {
   };
   res.render('urls_show', templateVars);
 });
-//redirects any request to /u/:shortURL to its longURL
-app.get('/u/:shortURL', (req, res) => {
 
-  const shortURL = req.params.shortURL;
+app.get('/u/:shortURL', (req, res) => {
+  const { shortURL } = reqContainer(req);
   const longURL = urlDatabase[shortURL].longURL;
-  
   res.redirect(longURL);
 });
-//creates tinyURL and redirects; adds to urlDatabase
+
 app.post('/urls', (req, res) => {
-  
-  console.log(req.body);
-  
+  const { userID, longURL } = reqContainer(req);
   const genShortURL = generateRandomString();
-  const longURL = req.body.longURL;
-  const userID = req.session.user_id;
- 
-  urlDatabase[genShortURL] = {
-    longURL,
-    userID
-  };
- 
+  urlDatabase[genShortURL] = { longURL, userID };
   res.redirect(`/urls/${genShortURL}`);
 });
 
 app.post('/login', (req, res) => {
-
-  const email = req.body.email;
-  const password = req.body.password;
-
-  let user = getUserByEmail(users, email);
-  
+  const { email, password } = reqContainer(req);
+  const user = getUserByEmail(users, email);
   if (!user) {
-
     return res.status(403).send('email not found');
-
-  } else if (!bcrypt.compareSync(password, user.password)) {
-
+  } else if (!bcrypt.compareSync(password, user.cryptPassword)) {
     return res.status(403).send('password does not match');
-
   } else {
-
-    req.session.user_id = user.id;
-    res.redirect('/urls'); 
-  }
+    creatCookie(req, res, user.id);
+  };
 });
-//clears cookies, logs out, redirect to /urls
+
 app.post('/logout', (req, res) => {
-  res.clearCookie('session');
-  res.redirect('/urls');
+  eradicateCookies(req, res);
 });
-//registers user, creates cookie with unique user id
+
 app.post('/register', (req, res) => {
-
-  const email = req.body.email;
-
+  const { email, password } = reqContainer(req);
   if (email === '') {
-
     return res.status(400).send('enter email');
-
   } else if (getUserByEmail(users, email)) {
-
     return res.status(400).send('email address exists, try a different one');
-
   } else {
-
-    const password = bcrypt.hashSync(req.body.password, 10);
+    const cryptPassword = bcrypt.hashSync(password, 10);
     const id = generateRandomString();
-
-    users[id] = {
-      id,
-      email,
-      password
-    }
-  
-    req.session.user_id = id;
-    res.redirect('/urls');
-  }
+    users[id] = { id, email, cryptPassword };
+    creatCookie(req, res, id);
+  };
 });
-//deletes entry to urlDatabase, redirects to /urls or /login
+
 app.post('/urls/:shortURL/delete', (req, res) => {
-
-  const shortURL = req.params.shortURL;
-  const userID = req.session.user_id;
+  const { shortURL, userID } = reqContainer(req);
   const user = urlDatabase[shortURL].userID;
-
   if (userID === user) {
-
-    delete urlDatabase[req.params.shortURL];
-
+    delete urlDatabase[shortURL];
     res.redirect('/urls');
   } else {
-
     res.redirect('/login');
-  }
-  delete urlDatabase[shortURL];
-  res.redirect('/urls'); 
+  };
 });
-//redirect to edit page
-app.post('/urls/:shortURL', (req, res) => {
 
-  const shortURL = req.params.shortURL;
-  
+app.post('/urls/:shortURL', (req, res) => {
+  const { shortURL } = reqContainer(req);
   res.redirect(`/urls/${shortURL}`); 
 });
-//updates user entered url in edit page, redirects to /urls
+
 app.post('/urls/:shortURL/edit', (req, res) => {
-
+  const { shortURL } = reqContainer(req);
   const updatedURL = req.body.updatedURL;
-  const shortURL = req.params.shortURL;
-  
   urlDatabase[shortURL].longURL = updatedURL;
-
   res.redirect('/urls'); 
 });
 
@@ -254,4 +124,3 @@ app.get('/urls.json', (req, res) => {
 app.listen(PORT, () => {
   console.log(`TinyApp listening to port ${PORT}!`);
 });
-
