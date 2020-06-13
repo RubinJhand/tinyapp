@@ -54,5 +54,5 @@ module.exports = {
   renderTemplateVariables, 
   eradicateCookies, 
   creatCookie, 
-  reqContainer 
+  reqContainer
 };

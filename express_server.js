@@ -1,4 +1,4 @@
-const { bodyParser, bcrypt, morgan, cookieSession, app, PORT, urlDatabase, users } = require('./dependencies');
+const { bodyParser, bcrypt, morgan, cookieSession, app, PORT, urlDatabase, users } = require('./dependentFunctions');
 const { getUserByEmail, generateRandomString, urlsForUser, renderTemplateVariables, eradicateCookies, creatCookie, reqContainer } = require('./helpers')
 
 app.set('view engine', 'ejs');
@@ -47,7 +47,7 @@ app.get('/urls/:shortURL', (req, res) => {
     shortURL,
     longURL,
     user: users[userID]
-  };
+  }
   res.render('urls_show', templateVars);
 });
 
