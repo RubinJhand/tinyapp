@@ -13,7 +13,6 @@ TinyApp is a full stack web application that allows users to shorten long URLs (
 *Create a shortURL*
 !["Screenshot of Create a shortURL"](https://github.com/xendrip/tinyapp/blob/master/docs/Create%20TinyURL.png?raw=true)
 
-
 *List of user's URL's and options to edit or delete*
 !["Screenshot of My URLs page with logged in and registered user"](https://github.com/xendrip/tinyapp/blob/master/docs/My%20URLs%20List.png?raw=true)
 
