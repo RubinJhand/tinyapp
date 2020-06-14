@@ -11,22 +11,6 @@
 
 <body>
    <%- include('./partials/_header') %>
-
-  <% if (!user) { %>
-    <!-- code from w3schools.com-->
-    <div class="justify-content-between" style="padding-top: 100px;">
-      <h2 class="display-3 alert-heading text-center" style="padding: 30px;">PLAY TinyApp</h2>
-      <div style="width: 400px; margin:0 auto;">
-        <form method="GET" action="/login">
-          <button type="submit" class="btn btn-success" style="width: 400px; margin:0 auto;">LOGIN</button>
-        </form>
-        <h4 class="text-center" style="padding: 30px;">OR</h4>
-        <form method="GET" action="/register">
-          <button type="submit" class="btn btn-success" style="width: 400px; margin:0 auto;">REGISTER</button>
-        </form>
-      </div>
-    </div>
-  <% } else { %>
     <main style="margin: 1em;">
       <h3>My URLs</h3>
       <table class="table">
@@ -55,7 +39,6 @@
             </td>
           </tr>
         <% } %>
-    <% } %>
       </tbody>
     </table>
   </main>
