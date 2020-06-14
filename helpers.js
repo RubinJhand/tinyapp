@@ -37,7 +37,7 @@ const eradicateCookies = (req, res) => {
 //Creates hashed cookie and redirects to /urls
 const creatCookie = (req, res, userIdentity) => {
   req.session.user_id = userIdentity;
-  res.redirect('urls');
+  res.redirect('/urls');
 };
 //Returns: email, password
 const  emailPasswordReq = (req) => {
@@ -48,12 +48,13 @@ const shortLongURLReq = (req) => {
  return { shortURL: req.params.shortURL, longURL: req.body.longURL };
 };
 
-const loginCheck = (req) => {
+const userIDCheck = (req, usersObject) => {
   const userID = req.session.user_id;
-  if (userID) {
-    return true;
-  }
-  return false;
+  for (let user in usersObject) {
+    if (userID === user) {
+      return true;
+    }
+  }  return false;
 };
 
 module.exports = { 
@@ -65,5 +66,5 @@ module.exports = {
   creatCookie, 
   emailPasswordReq,
   shortLongURLReq,
-  loginCheck
+  userIDCheck
 };

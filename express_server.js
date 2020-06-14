@@ -1,5 +1,5 @@
 const { bodyParser, bcrypt, morgan, cookieSession, app, PORT, urlDatabase, users } = require('./constRequires');
-const { getUserByEmail, generateRandomString, urlsForUser, renderTemplateVariables, eradicateCookies, creatCookie, emailPasswordReq, shortLongURLReq, loginCheck } = require('./helpers')
+const { getUserByEmail, generateRandomString, urlsForUser, renderTemplateVariables, eradicateCookies, creatCookie, emailPasswordReq, shortLongURLReq, userIDCheck } = require('./helpers')
 
 app.set('view engine', 'ejs');
 
@@ -11,7 +11,7 @@ app.use(cookieSession( {
 }));
 
 app.get('/', (req, res) => {
-  if (loginCheck(req)) {
+  if (userIDCheck(req, users)) {
    res.redirect('/urls'); 
   } else {
     res.redirect('/login');
@@ -19,7 +19,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/urls', (req, res) => {
-  if (!loginCheck(req)) {
+  if (!userIDCheck(req, users)) {
     res.redirect('/login');
   } else {
   renderTemplateVariables(req, res, urlsForUser(req.session.user_id, urlDatabase), users, 'urls_index');
@@ -27,8 +27,7 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  const userID = req.session.user_id;
-  if (!users[userID]) {
+  if (!userIDCheck(req, users)) {
     res.redirect('/login');
   } else {
     renderTemplateVariables(req, res, urlDatabase, users, 'urls_new');
@@ -36,7 +35,7 @@ app.get('/urls/new', (req, res) => {
 });
 
 app.get('/register', (req, res) => {
-  if (!loginCheck(req)) {
+  if (!userIDCheck(req, users)) {
     renderTemplateVariables(req, res, urlDatabase, users, 'register');
   } else {
     res.redirect('/urls');
@@ -44,25 +43,39 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  renderTemplateVariables(req, res, urlDatabase, users, 'login');
+  if (userIDCheck(req, users)) {
+    res.redirect('/urls');
+  } else {
+    renderTemplateVariables(req, res, urlDatabase, users, 'login');
+  };
 });
 
 app.get('/urls/:shortURL', (req, res) => {
-  if (!loginCheck(req)) {
+  const userID = req.session.user_id;
+  const { shortURL } = shortLongURLReq(req);
+  if (!userIDCheck(req, users)) {
     res.redirect('/login');
-  } else {
-    const userID = req.session.user_id;
-    const { shortURL } = shortLongURLReq(req);
+  } else if (userID === urlDatabase[shortURL].userID) {
     const longURL = urlDatabase[shortURL].longURL;
     let templateVars = { shortURL, longURL, user: users[userID] };
     res.render('urls_show', templateVars);
+  } else {
+    res.status(404).send('shortURL - longURL mismatch! Try again');
   };
 });
 
 app.get('/u/:shortURL', (req, res) => {
   const { shortURL } = shortLongURLReq(req);
-  const longURL = urlDatabase[shortURL].longURL;
-  res.redirect(longURL);
+  if (urlDatabase[shortURL]) {
+    const longURL = urlDatabase[shortURL].longURL;
+    if (longURL === undefined) {
+      res.status(302);
+    } else {
+      res.redirect(longURL);
+    }
+  } else {
+    res.status(404).send('shortURL - longURL mismatch! Try again');
+  }
 });
 
 app.post('/urls', (req, res) => {
@@ -104,7 +117,7 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/urls/:shortURL', (req, res) => {
-  if (!loginCheck(req)) {
+  if (!userIDCheck(req, users)) {
     res.redirect('/login');
   } else {
     const { shortURL } = shortLongURLReq(req);
