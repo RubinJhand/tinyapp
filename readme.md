@@ -17,6 +17,9 @@ TinyApp is a full stack web application that allows users to shorten long URLs (
 *List of user's URL's and options to edit or delete*
 !["Screenshot of My URLs page with logged in and registered user"](https://github.com/xendrip/tinyapp/blob/master/docs/My%20URLs%20List.png?raw=true)
 
+*Change longURL of user's shortURL*
+!["Screenshot of My URLs page with logged in and registered user"](https://github.com/xendrip/tinyapp/blob/master/docs/Edit%20%20URL.png?raw=true)
+
 ## Dependencies
 
 - Node.js
